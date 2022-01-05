@@ -56,3 +56,60 @@ class RecipeResource(Resource) :
 
 
         return {'data' : record_list}, HTTPStatus.OK
+        
+    def put(self, recipe_id) :
+
+        data = request.get_json()
+
+
+        try :
+            # 1. DB 에 연결
+            connection = get_connection()            
+            
+            # 2. 쿼리문 만들고
+            query = '''update recipe
+                        set cook_time = %s , directions = %s
+                        where id = %s;'''
+            # 파이썬에서, 튜플만들때, 데이터가 1개인 경우에는 콤마를 꼭
+            # 써준다.
+            record = (data['cook_time'], data['directions'] , recipe_id )
+            
+            # 3. 커넥션으로부터 커서를 가져온다.
+            cursor = connection.cursor()
+
+            # 4. 쿼리문을 커서에 넣어서 실행한다.
+            cursor.execute(query, record)
+
+            # 5. 커넥션을 커밋한다.=> 디비에 영구적으로 반영하라는 뜻.
+            connection.commit()
+
+        except Error as e:
+            print('Error ', e)
+            return {'error' : str(e)} , HTTPStatus.BAD_REQUEST
+        finally :
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+                print('MySQL connection is closed')
+
+        return {'result' : '업데이트가 잘 되었습니다.'}, HTTPStatus.OK
+
+    def delete(self, recipe_id) :
+        try :
+            # 1. DB 에 연결
+            connection = get_connection()
+
+            #2. 쿼리문 만들고
+            query = '''delete from recipe
+                        where id = %s;'''
+            #파이썬에서, 튜플만들떄, 데이터가 1개인 경우에는 콤마를 꼭
+            #써준다.
+            record = (recipe_id,)
+
+            #3. 커넥션으로부터 커서를 가져온다.
+            cursor = connection.cursor()
+
+            #4. 쿼리문을 커서에 넣어서 실행한다.
+            cursor.execute(query, record)
+
+            #5.커넥션을 커밋한다. => 디비에 영구
