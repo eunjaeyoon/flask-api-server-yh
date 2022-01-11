@@ -8,10 +8,15 @@ from resources.recipe import RecipeListResource
 from resources.recipe_info import RecipeResource
 from resources.recipe_publish import RecipepublishResource
 from resources.register import UserRegisterResource
+from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
+# JWT 토큰 만들기
+jwt = JWTManager(app)
 
 api = Api(app)
+
+app.config.from_object(Config)
 
 # 경로와 리소스를 연결한다.
 api.add_resource(RecipeListResource, '/recipes')
