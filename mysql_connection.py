@@ -7,4 +7,4 @@ def get_connection() :
         user = 'movie_user',
         password = '2301'
     )
-    return 
+    return connection
